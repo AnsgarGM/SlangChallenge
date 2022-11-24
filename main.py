@@ -1,6 +1,7 @@
 import requests
 import datetime
 import keys
+import json
 
 def get_activity_by_user( data ):
     final = {}
@@ -57,6 +58,14 @@ if __name__ == '__main__':
 
     res = requests.get( "https://api.slangapp.com/challenges/v1/activities", headers = { "Authorization": keys.auth_header } )
     if res.status_code == 200:
-        print( "Yei", end = "\n" )
-        sessions = make_user_sessions( res.json() )
-        print( sessions )
+        user_sessions = { "user_sessions": make_user_sessions( res.json() ) }
+
+        print( json.dumps( user_sessions, indent=4 ) )
+
+        res = requests.post( "https://api.slangapp.com/challenges/v1/activities/sessions",
+                        headers = { "Authorization": keys.auth_header },
+                        json = user_sessions )
+        print( res.status_code )
+        if res.status_code == 204:
+            print( "Data sent c:" )
+            print( "Have a nice day!" )
